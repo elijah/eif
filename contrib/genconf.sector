@@ -1,0 +1,3 @@
+#!/bin/sh
+awk	'/^t technical center/ { print "TECH_MIN_EDU=" $12 "\nTECH_LAG=" $13 }
+	/^r research lab/ { print "RES_MIN_EDU=" $12 "\nRES_LAG=" $13 }' >> .config

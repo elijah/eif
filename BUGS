@@ -1,0 +1,14 @@
+
+CURRENT BUGS:
+
+   - There is a problem with connections over VERY slow links.
+     It has to do with timing out on the connection.
+     It has even shown up as the dreaded nuke bug, for other
+     reasons.  EIF may be more susceptable to the nuke bug
+     than emp_client.
+     The only problem is that you need a slow link to debug
+     it.
+
+   - When you hit ^C, weird output may occur from the client, until
+     things sort themselves out.
+

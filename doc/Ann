@@ -1,0 +1,56 @@
+
+Announcing the first general release of EIF.
+
+A new Empire InterFace.
+
+
+Early this year I finally decided that emp_client was insufficient
+for my needs.  After looking around at several of the other
+clients underdevelopment, I decided that they were also insufficient
+for my desires.  I wanted a better interface, not something that
+played my game for me.
+
+So... eif was born.
+
+What is eif?
+   Aliases with parameters.
+   Command history, substitution, etc.  Courtesy of GNU.
+   Variables.
+   Minor conditionals.  (if, elseif, else, endif)
+   Various forms of file redirection, piping and execution.
+
+What doesn't eif do?
+   Eif does not play your game for you.  Use GEET, Eddie or Xemp.
+   Eif knows next to nothing about the game of empire.
+   Eif does not use Xwindows, Sunview, etc.  It is command line based.
+
+Where is eif?
+   At an ftp site near you.
+
+Support?
+   Virtually non-existent.  This may be the one and only release of eif.
+   It has been tested quite a bit, and hopefully has no major bugs left.
+
+   Enhancements?  Code them yourself.
+
+   OS's?  Known to compile and run on SunOS and MipsOS.  Probably most
+   others as well.
+
+Previous Versions
+   There are a couple of beta test versions that are wandering around.
+   This fixes most/all of the known bugs with those, and has a couple
+   of enhancements.  Also, a lot of the code was restructured.
+   But, use what you want.
+
+Disclaimer
+   Standard disclaimer.  For free?  You fix it.
+
+
+
+Good Luck, and may you lose gracefully.
+
+
+Doug Hay
+dhay@swen2.waterloo.edu  <- But not after July 1991.
+Aliens
+

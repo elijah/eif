@@ -1,0 +1,70 @@
+# @pkglibdir@/eifrc.include
+# This requires a tmp dir in your empire gamedir.
+#
+# You can include this file with
+# 'exec @pkglibdir@/eifrc.include'
+# in your .eifrc
+
+setvar eiflibdir @pkglibdir@
+
+# room commodity to_sector threshhold_in_from_sectors max_per_sector sectors
+# p.e.: room civ 5,5 5000 50 # ?des=c
+# moves for each city in # max(50, num_of_civs - 5000) to 5,5
+alias room "dump ${5} ${6:-?des#.} >!tmp/tmp_dump ; runfeed ${eiflibdir}/mov ${1} ${2} ${3} ${4}"
+alias troom "dump ${5} ${6:-?des#.} >!tmp/tmp_dump ; @ ${eiflibdir}/mov ${1} ${2} ${3} ${4}"
+
+# expp from_sector base_path explore_path
+# p.e. expp 2,0 jju uj
+# produces:
+# explore civ 2,0 1 jjuuh
+# designate 8,-2 +
+# explore civ 2,0 1 jjuujh
+# desi 10,-2 +
+alias expp "runfeed ${eiflibdir}/ex ${1} ${2} ${3}"
+alias texpp "@ ${eiflibdir}/ex ${1} ${2} ${3}"
+
+# with description do commands with \[\]
+# p.e. with \# \?food\<400 do mov f 1,1 50 \[\]
+# to move 50 food from 1,1 to all sectors with less than 400 food.
+alias with "runfeed ${eiflibdir}/${0}"
+alias lwith "runfeed ${eiflibdir}/${0}"
+alias nwith "runfeed ${eiflibdir}/${0}"
+alias pwith "runfeed ${eiflibdir}/${0}"
+alias swith "runfeed ${eiflibdir}/${0}"
+
+# Ship Stat 2: shows mob/sector and number of sectors it can move.
+alias ss2 "sdump $* type eff mob tech spd name | ${eiflibdir}/mob.sh"
+
+alias genconfig "ver | ${eiflibdir}/genconf.version; show sect cap | ${eiflibdir}/genconf.sector"
+
+# edu & happiness
+alias edu "prod * ?ne=l | ${eiflibdir}/lev0.sh edu; nat | ${eiflibdir}/edu1.sh; dump * civ ?own=oldown | ${eiflibdir}/pop.sh; @${eiflibdir}/edu2.pl"
+alias happy "prod * ?ne=p | ${eiflibdir}/lev0.sh happy; nat | ${eiflibdir}/hap1.sh; dump * civ ?own=oldown | ${eiflibdir}/pop.sh; @${eiflibdir}/hap2.pl"
+
+# iron/dust production
+alias predict "prod $2 ${3:-} | ${eiflibdir}/luse.sh $1 p; prod $2 ${3:-} | ${eiflibdir}/luse.sh $1 u"
+alias iron "predict i ${1:-*} ${2:-}"
+alias dust "predict d ${1:-*} ${2:-}"
+alias lcm "predict l ${1:-*} ${2:-}"
+alias hcm "predict h ${1:-*} ${2:-}"
+alias oil "predict o ${1:-*} ${2:-}"
+alias radi "predict r ${1:-*} ${2:-}"
+
+# building cost prediction
+alias lcost "show l b >! tmp/buildcost.sb; ldump ${1:-*} ${2:-} type x y eff >! tmp/buildcost.dam; dump ${1:-*} ${2:-} des sdes x y lcm hcm mil avail >! tmp/buildcost.stat; @${eiflibdir}/buildcost.pl land"
+alias pcost "show p b >! tmp/buildcost.sb; pdump ${1:-*} ${2:-} type x y eff laun >! tmp/buildcost.dam; dump ${1:-*} ${2:-} des sdes x y lcm hcm mil avail >! tmp/buildcost.stat; @${eiflibdir}/buildcost.pl plane"
+alias scost "show s b >! tmp/buildcost.sb; sdump ${1:-*} ${2:-} type x y eff >! tmp/buildcost.dam; dump ${1:-*} ${2:-} des sdes x y lcm hcm mil avail >! tmp/buildcost.stat; @${eiflibdir}/buildcost.pl ship"
+
+# ship decay (only useful if SHIP_DECAY is on in "version")
+alias decay "show sh c >! tmp/.decay.sshc; show sh b >! tmp/.decay.sshb; sdump ${1:-*} ${2:-} type mil civ fir eff x y >! tmp/.decay.sdump; @${eiflibdir}/decay.pl"
+
+# count commodities in sectors
+# p.e. comco * ?des#m iron
+alias comco "dump ${1:-*} ${2:-civ} ${3:-civ} | ${eiflibdir}/comcount.sh"
+
+# add up a column in the output of a command
+# p.e.: colco 5 "prod * ?des=e | tail +3"
+alias colco "${2} ${3:-} ${4:-} | awk 'BEGIN { n = 0\\\; } { n = n + ${}${1}\\\; } END {print n\\\; }'"
+
+# This requires bmdump in the server to work...
+alias cmap "dump ${1:-*} des >! tmp/cmap.dump; bmdump ${1:-*} x y des >! tmp/cmap.mdump; ldump ${1:-*} x y fort >! tmp/cmap.ldump; pdump * ?type=ss x y laun orb >! tmp/cmap.sat; look * ?type#sb&type#sbc&type#na&type#nm >! tmp/cmap.llook; llook * >> tmp/cmap.llook; coast * >! tmp/cmap.coast; @ ${eiflibdir}/cmap.pl"

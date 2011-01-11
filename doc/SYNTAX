@@ -1,0 +1,230 @@
+============================================================================
+
+EIF (Empire InterFace)
+
+   General Syntax
+   ==============
+
+There are 2 types of input.  First, command level.  This is the normal
+input.
+The second is "secondary" input, in which a command asks you a question.
+Such as doing a "map" command without specifying a range.
+
+Command Level
+-------------
+
+Any line with a "#" as the first non-space character is a comment line,
+and is ignored.
+Any line with a "&" as the first non-space character is marked as only
+for secondary input, and is ignored.  More on this later.
+
+"$var"s are replaced with the value of the variable "var".  See below.
+
+Leading spaces on a command line are ignored, and not sent to empire.
+
+Multiple commands may be entered on the same line, with the commands
+seperated by a ";" character.  IE, "nation ; power" will perform
+a nation, then a power command.
+";"s inside of quoted strings (") are ignored for this.
+
+(NOTE that ";" will not seperate lines inside of telegrams and
+announcements.  Otherwise you can't get ";" into them.  Not sure
+if this is proper, but....)
+
+Output is redirected using ">".
+    ">fname" - direct this command's output into the file "fname".  File
+               must NOT exist.  Command aborted if it does.
+    ">>fname" - this command's output is appended to the file "fname".
+               The file may or may not exist.
+    ">!fname" - this command's output written to the file "fname".
+               Any existing data in the file is wiped.
+Redirection supports ~/filename.
+
+Piping is supported, through the "|" type syntax.
+     "list | more" will pipe the list command into more.
+Piping supports ~/filename.
+
+Aliases are supported.  If the first non-space string on a command
+line matches an alias, the string is replaced with the alias.
+NOTE that string in this context can have any characters but spaces,
+not withstanding any other special characters. (#,&,!!,^)
+
+
+Command history is supported.
+    "^p" - moves backwards in command history.
+    "^n" - moves forewards in command history.
+    "!!"  - repeat last command.
+    "!str" - repeat last command which started with "str".
+    "!?str?" - repeat last command which contained "str".
+    "!n"  - repeat the nth command, where n is a number.
+    "!-n"  - repeat the nth previous command, where n is a number.
+    "^s1^s2"  - repeat the previous command, replacing string s1 with
+             string s2.
+    Other variants.  Read the "history.texinfo" in the readline directory.
+    And "readline.texinfo".
+
+
+Exec files are supported, along with exec's inside of execs.
+
+
+
+Secondary Input
+---------------
+
+This is input that commands request.  IE, asking questions that you
+didn't answer in the command line, or were unable to answer until
+the command was started.
+
+This creates problems for exec files, aliases, etc, since you are
+not always sure how many questions will be asked.  Thus, you can
+mark secondary input lines with a leading "&".
+This prevents the secondary input lines as being attempted as commands.
+
+IE, "read >>read ; &y ; &n"  will avoid that annoying problem of
+telegrams arriving while reading.
+
+And, "build plane 16,2 ; &fighter 2 ; & " fixes the problem of
+not being able to specify multiword entries in a single line.
+(Typing "build plane 16,2 fighter 2 100"  will try to build
+you a 'fighter 1' at tech 2.)
+
+Preconditioning:
+   - leading spaces are removed.  Spaces after the "&", as well as
+     the "&", are removed.
+   - trailing spaces are removed.   ("ssm 2 " is not == "ssm 2".)
+
+This preconditioning is not done for telegrams and announcements,
+through a special case which examines the prompt string.
+
+
+Aliases
+-------
+
+   'alias'       - list all the aliases
+   'alias word'  - show what alias 'word' is.
+   'alias word command' - create/change alias 'word' to command.
+   'alias word "command"' - ditto, but the "s are removed.   Allows
+                 embedding of several commands inside one alias.
+                 ie, 'alias dd "dump #0 >!dmp; map #0 >!map"'
+
+   'unalias word' - delete the alias for 'word', if it exists.
+
+    The variables $0, $1, $2, ...  are supported for aliases.
+    They are the "words" in the command that the alias is working on.
+
+    Also, these variables can be conditional.
+    ${N:-word}  uses "word" if argument N does not exist.
+    ${N:?word}  prints out "word" and aborts command if N does not exist.
+    ${N:+word}  uses nothing if argument N does not exist.
+
+    "words" are space delimited, or surrounded by "s.
+
+    Example:
+       local% alias tt "echo 0-$0  1-$1  2-$2"
+       local% tt a b c d e f
+       0-tt 1-a 2-b c d e f
+       local% tt "a b" c d e f
+       0-tt 1-a b 2-c d e f
+
+EXEC
+----
+    exec filename  - execute the commands in "filename".
+
+exec's are allowed to be recursive, but at this time there is a
+minor bug when the exec file ends on secondary input.  Input is
+redirected to stdin, and not the calling exec file.
+Fixed some day.
+
+output redirection handles recursive execs.
+
+VARIABLES
+---------
+
+   $$   - process id.
+   $<   - read from stdinput.
+   ${<:%word}  - read from stdinput, using "word" as a prompt.
+   $%name  - retrieve "name" from the runtime environment, using
+              getenv().
+   $name   - replace with value of "name".
+
+   ${name}  - replace with value of name.
+   ${name:-word} - if name is not set, or null, use "word" instead.
+   ${name:=word} - if name is not set, or null, use "word", and set variable
+                  to "word".
+   ${name:?word} - if name not set, or null, print "word" and abort command.
+   ${name:+word} - if name not set, or null, substitute nothing.
+   ${name:%word} - use "word" as prompt if "name" == "<".  ":%word" ignored
+                  elsewhere.
+
+
+   setvar name string
+   setvar name "string"
+   setvar name
+   unsetvar name
+
+
+COMMANDS
+--------
+    The current list of commands are:
+
+     alias   - setting aliases.
+     unalias - remove an alias.
+     echo    - print out the rest of the line.
+     beep    - make a beep.
+     games   - show the games that are configure in.
+     addgame - add a game.
+     connect - connect to a game.
+     kill    - kill a hung game process.  (Only works if server supports it.)
+     try     - try a country/rep at a given game.
+     trykill - kill a hung game process for a country/rep at a given game.
+     exit    - quit the program
+     cmdlist - list these commands
+     exec    - exeute a file.  Supports ~/filename.
+     runfeed - exeute a program, and use its output as eif commands.
+     history - display a listing of the command history.
+     setvar  - set a variable.
+     unsetvar - delete a variable.
+     @       - pass the rest of the command off to the system to
+               execute.
+     if      - Uses /bin/test, and stops at endif.  Disables command if
+               test returns false.  Can be nested.  Cannot span exec files.
+     elseif  - Next case in an if sequence, same testing as 'if'.
+     else    - Last case in an if sequence.
+     endif   - Ends an 'if' sequence.
+
+The file "$HOME/.eifrc" is read in and executed as an exec file.
+
+AUTOCONNECTION
+--------------
+
+The variable "AUTOGAME" is set if there is a game name specified
+in the runtime options.
+
+I.E.,  "eif mygame"   would be equivalent to "setenv AUTOGAME mygame"
+
+With the last line in the .eifrc file is:
+   "connect ${AUTOGAME:?}"
+
+an autoconnect function is served.
+
+RUNTIME OPTIONS
+---------------
+
+There is currently only 2 useful runtime options:
+   -D varname value
+       Which is equivalent to "setenv varname value".
+   -r
+       Which disables reading in of ~/.eifrc at startup.
+
+
+OTHER THINGS
+------------
+
+    When "connecting" to a game, the program does a chdir to the
+    directory specified in the "addgame" command.  Thus, you
+    can have multiple games, in multiple directories, so that
+    your data files for things like "ve" don't get messed up.
+    NOTE that the directory name in "addgame" is relative to
+    your home directory.
+
+============================================================================

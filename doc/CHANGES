@@ -1,0 +1,115 @@
+
+
+Jun 6 1991
+    Added a runtime option to disable "^G" in the output.  Prevents the
+   terminal from beeping repetively when doing zillions of "fire"s, or
+   other things like that.
+
+
+May 30 1991
+    Fixed a bunch of little things to do with echoing the command line
+   into a redirected file.  This is necessary for many empire tools which
+   use the first line to figure out what the rest of the data file is.
+    This worked originally, but in cleaning up the code, broke it.  Stupid.
+   Shouldn't screw so much with working code.
+
+May 30 1991
+    Fixed "^C" so that it will abort the current command.  Was unable to
+   abort telegrams and announcements.  Not sure when this problem developed,
+   but pretty sure it worked at one time previously.
+
+May 30 1991
+    Telegrams and announcements can now have ";" in them.  This means
+    that you can't do:
+        tele 2 ; Hi there ; . 
+    You now have to type each line explicitly.
+
+----------- Version 1.0.2 ------------
+
+Jan 1994  Jim Gillogly
+    Fixed the "kill" command in expect.c.
+
+26 May 1994  Ken Stevens
+    removed the -g option in Makefile to make the executable smaller.
+
+26 May 1994  Ken Stevens
+    added a #define option "FUNNY_HIGH" in print.c.  If highlighting isn't
+    working on your terminal, then #define FUNNY_HIGH in print.c.
+
+----------- Version 1.0.3 ------------------
+
+19 Apr 1995  Drake Diedrich
+    Ported to DEC/OSF1 (Alpha).
+    Removed some conflicting function definitions (sprintf ...)
+    Replaced readline with readline-2.0.
+
+1999		Marc Olzheim
+	Ported to FreeBSD / OpenBSD / NetBSD / Linux
+
+----------- Version 1.2.0 ------------------
+
+Sep 2000	Jan Willem Knopper
+	Added IPv6 support.
+
+----------- Version 1.2.1 ------------------
+
+2002		Marc Olzheim
+	Various rewrites and fixes.
+
+----------- Version 1.2.2 ------------------
+
+Mar 2003	Marc Olzheim
+	Stuffed the source into a CVS repository.
+	Used 'indent' on the source.
+
+----------- Version 1.2.3 ------------------
+
+13 Mar 2003	Marc Olzheim
+	Moved documentation into a manpage.
+
+----------- Version 1.2.4 ------------------
+
+10 May 2003	Marc Olzheim
+	Added stuff to the contrib dir.
+	Automated install of eifrc.include with correct paths.
+
+24 May 2003	Marc Olzheim
+	Added stuff to the contrib dir.
+	Added escaping of "$", "\", """ and ";", by prepending a "\".
+
+----------- Version 1.3.0 ------------------
+
+17 Sep 2003	Marc Olzheim
+	Reinstated environment variable mangling. Useful for external
+	programs.
+
+19 Sep 2003	Marc Olzheim
+	Moved to automake 1.7 and configure 2.57.
+
+24 Sep 2003	Marc Olzheim
+	make distcheck now works.
+	Added rudimentary support for C_INFORM.
+
+----------- Version 1.3.1 ------------------
+
+06 Oct 2003	Marc Olzheim
+	Fix (un)install of symlinks to "with" in contrib.
+	Redraw prompt if a message was "informed".
+	Fix make distcheck again...
+
+07 Oct 2003	Marc Olzheim
+	Little cleanups.
+	Release last version with synchronous communication.
+
+----------- Version 1.3.2 ------------------
+
+23 Dec 2003	Marc Olzheim
+	Fix edu command in contrib
+	Add cmap command for servers with bmdump
+
+----------- Version 1.3.3 ------------------
+
+06 Feb 2004	Markus Armbruster
+	Debian 3.0 version didn't compile. Fix include in empcon.c
+
+----------- Version 1.3.4 ------------------

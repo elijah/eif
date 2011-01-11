@@ -1,0 +1,43 @@
+# games
+addgame g1 localhost 1618 POGO peter gamedatadirectory1
+addgame g2 localhost 1617 POGO peter gamedatadirectory2
+addgame change blitz.wolfpackempire.com 6789 visitor visitor .empire.chg
+
+# Expansion aliases
+alias d- "desi * ?des=- +"
+
+# dumping aliases
+#alias dd "dump # ?des#. >!dmp"
+#alias mm "map # >!map"
+#alias dm "dd ; mm"
+#alias ss "ship * >!ship"
+#alias rr "radar #0 ?des=) >!r1"
+#alias cc "coast #0 >!coast"
+#alias rd "res #0 ?des=${1:-g}"
+
+# I hate mistyping move
+#alias mvoe move
+#alias mvo move
+#alias mv move
+
+alias x exit
+alias q quit
+
+# Selective production report, which defaults to "a", and not redesignated
+# sectors.
+alias pr "prod # ?des=${1:-a}&des=newd"
+
+# Selective census, which defaults to "+".
+alias cd "cen # ?des=${1:-+}"
+# Selectively find sectors with new designations.
+alias cdc "cen # ?des#newd&newd=${1:-newd}"
+
+# This is a neat one.  Scan back 1 day in the news for news events which do not
+# match the specified ones.
+####               tel    unocc   oplag   dplag   dfam    guer    spy   ofly   fireb
+alias ncc "news ${1:-1} ?acti#4&acti#12&acti#31&acti#32&acti#34&acti#38&acti#3&acti#9&acti#14"
+alias nc "ncc ${1:-1} | more"
+
+# This supports autoconnection.  If the AUTOGAME var is not set,
+# this command is quietly aborted.
+connect ${AUTOGAME:?}

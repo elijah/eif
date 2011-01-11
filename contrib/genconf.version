@@ -1,0 +1,7 @@
+#!/bin/sh
+awk	'/^An update consists/ { print "ETU=" $5 }
+	/^Education p.e. requires/ { print "EDU_PE=" $9 }
+	/^Education is averaged over/ { print "EDU_AVG=" $5 }
+	/^Happiness p.e. requires/ { print "HAP_PE=" $8 }
+	/^Happiness is averaged over/ { print "HAP_AVG=" $5 }
+	' > .config

@@ -1,0 +1,340 @@
+.\" $Id: eif.1,v 1.10 2003/09/17 19:15:55 marcolz Exp $
+.Th EIF 1
+.Dd May 24, 2003
+.Dt EIF 1
+.Sh NAME
+.Nm eif
+.Nd Empire InterFace
+.Sh SYNOPSIS
+.Nm
+.Op Fl r
+.Op Fl D Ar varname value
+.Op Ar game
+.Sh DESCRIPTION
+.Ss What is eif?
+The
+.Nm
+program is an alternative to the empclient that comes with the Wolfpack
+Empire server.
+.Nm
+supports aliases with parameters, command history, substitution, etc.
+(Courtesy of GNU readline), variables, rudimentary conditionals and
+various forms of file redirection, piping and execution.
+.Ss What doesn't eif do?
+.Nm
+does not play your game for you. Use GEET or Xemp.
+.Nm
+knows next to nothing about the game of empire.
+.Nm
+does not use Xwindows, Sunview, etc. It is command line based.
+.Ss Autoconnection
+The variable "AUTOGAME" is set if there is a game name specified
+in the runtime options. I.E.,
+.Pp
+.Dl "eif mygame"
+.Pp
+would be equivalent to
+.Pp
+.Dl "setvar AUTOGAME mygame"
+.Pp
+from the
+.Nm
+command prompt.
+.Pp
+When the last line in the .eifrc file is:
+.Pp
+.Dl "connect ${AUTOGAME:?}"
+.Pp
+an autoconnect function is served.
+.Ss Runtime Options
+The following options are available:
+.Bl -tag -width indent
+.Fl D Ar varname value
+Equivalent to "setvar varname value" on the
+.Nm
+command prompt.
+.Fl r
+Disable reading of \fI$HOME/.eifrc\fR at startup.
+.El
+.Sh GENERAL SYNTAX
+There are 2 types of input. First, command level. This is the normal
+input. The second is "secondary" input, in which a command asks you a
+question. Such as doing a "map" command without specifying a range.
+.Ss Command Level
+Any line with a "#" as the first non\-space character is a comment line,
+and is ignored. Any line with a "&" as the first non\-space character is
+marked as only for secondary input, and is ignored. More on this later.
+.Pp
+"$var"s are replaced with the value of the variable "var". See below.
+.Pp
+Leading spaces on a command line are ignored, and not sent to empire.
+.Pp
+Multiple commands may be entered on the same line, with the commands
+seperated by a ";" character. IE, "nation ; power" will perform a
+nation, then a power command. ";"s inside of quoted strings (") are
+ignored for this.
+.Pp
+(NOTE that ";" will not seperate lines inside of telegrams and
+announcements. Otherwise you can't get ";" into them. Not sure if this
+is proper, but....)
+.Pp
+Output is redirected using ">".
+.Bl -tag -width "XXXXXXXX" -compact
+.It ">fname"
+direct this command's output into the file "fname". File must NOT exist.
+Command aborted if it does.
+.It ">>fname"
+this command's output is appended to the file "fname". The file may or may not
+exist.
+.It ">!fname"
+this command's output written to the file "fname". Any existing data in the
+file is wiped.
+.El
+Redirection supports ~/filename.
+.Pp
+Piping is supported, through the "|" type syntax.
+.Dl "list | more"
+will pipe the list command into more. Piping supports ~/filename.
+.Pp
+Aliases are supported. If the first non\-space string on a command
+line matches an alias, the string is replaced with the alias.
+NOTE that string in this context can have any characters but spaces,
+not withstanding any other special characters. (#,&,!!,^)
+.Pp
+Command history is supported.
+.Bl -tag -width "XXXXXXXX" -compact
+.It "^p"
+moves backwards in command history.
+.It "^n"
+moves forewards in command history.
+.It "!!" 
+repeat last command.
+.It "!str"
+repeat last command which started with "str".
+.It "!?str?"
+repeat last command which contained "str".
+.It "!n" 
+repeat the nth command, where n is a number.
+.It "!\-n" 
+repeat the nth previous command, where n is a number.
+.It "^s1^s2" 
+repeat the previous command, replacing string s1 with string s2.
+.El
+Other variants. Read the "history.texinfo" in the readline directory. And
+"readline.texinfo".
+Exec files are supported, along with exec's inside of execs.
+.Ss Secondary Input
+This is input that commands request. IE, asking questions that you didn't
+answer in the command line, or were unable to answer until the command was
+started.
+.Pp
+This creates problems for exec files, aliases, etc, since you are not always
+sure how many questions will be asked. Thus, you can mark secondary input
+lines with a leading "&". This prevents the secondary input lines as being
+attempted as commands.
+.Pp
+IE, "read >>read ; &y ; &n" will avoid that annoying problem of telegrams
+arriving while reading.
+.Pp
+And, "build plane 16,2 ; &fighter 2 ; & " fixed the problem of
+not being able to specify multiword entries in a single line.
+(Typing "build plane 16,2 fighter 2 100" would try to build
+you a 'fighter 1' at tech 2.) This example is outdated now.
+.Pp
+Preconditioning:
+.Bl -tag -width XX
+.It leading spaces are removed.
+Spaces after the "&", as well as the "&", are removed.
+.It trailing spaces are removed.
+("ssm 2 " is not == "ssm 2".)
+.El
+.Pp
+This preconditioning is not done for telegrams and announcements,
+through a special case which examines the prompt string.
+.Pp
+.Ss Escaping
+If one the characters '$' ';' '"' '\\'
+is not to be parsed by eif, it can be escaped with a \\. Note that a '$'
+can also be escaped as "${}".
+.Pp
+.Ss Aliases
+.Bl -tag -width "XXXXXXXXXXXXXXXXXXXXXX" -compact
+.It 'alias'
+list all the aliases
+.It 'alias word'
+show what alias 'word' is.
+.It 'alias word command'
+create/change alias 'word' to command.
+.It "'alias word ""command""'"
+ditto, but the "s are removed. Allows embedding of several commands inside
+one alias. ie, 'alias dd "dump #0 >!dmp; map #0 >!map"'
+.Pp
+.It 'unalias word'
+delete the alias for 'word', if it exists.
+.El
+.Pp
+The variables $0, $1, $2, ... are supported for aliases.
+They are the "words" in the command that the alias is working on.
+.Pp
+Also, these variables can be conditional.
+.Bl -tag -width "XXXXXXXXXXX" -compact
+.It ${N:\-word}
+uses "word" if argument N does not exist.
+.It ${N:?word}
+prints out "word" and aborts command if N does not exist.
+.It ${N:+word}
+uses nothing if argument N does not exist.
+.El
+.Pp
+"words" are space delimited, or surrounded by "s.
+.Pp
+Example:
+.Dl "local% alias tt ""echo 0\-$0  1\-$1  2\-$2"""
+.Dl "local% tt a b c d e f"
+.Dl "0\-tt 1\-a 2\-b c d e f"
+.Dl "local% tt ""a b"" c d e f"
+.Dl "0\-tt 1\-a b 2\-c d e f"
+.Ss Exec
+.Bl -tag -width "XXXXXXXXXXXXXX" -compact
+.It exec filename
+execute the commands in "filename".
+.El
+.Pp
+exec's are allowed to be recursive, but at this time there is a
+minor bug when the exec file ends on secondary input. Input is
+redirected to stdin, and not the calling exec file.
+Fixed some day.
+.Pp
+Output redirection handles recursive execs.
+.Ss Variables
+.Bl -tag -width "XXXXXXXXXXXXXXXXXX" -compact
+.It $$
+process id.
+.It $<
+read from stdinput.
+.It ${}
+a literal $.
+.It ${<:%word}
+read from stdinput, using "word" as a prompt.
+.It $%name
+retrieve "name" from the runtime environment, using getenv().
+.It $name
+replace with value of "name".
+.Pp
+.It ${name}
+replace with value of name.
+.It ${name:\-word}
+if name is not set, or null, use "word" instead.
+.It ${name:=word}
+if name is not set, or null, use "word", and set variable to "word".
+.It ${name:?word}
+if name not set, or null, print "word" and abort command.
+.It ${name:+word}
+if name not set, or null, substitute nothing.
+.It ${name:%word}
+use "word" as prompt if "name" == "<". ":%word" ignored elsewhere.
+.Pp
+.It setvar name string
+.It "setvar name ""string"""
+.It setvar name
+.It unsetvar name
+.El
+.Pp
+If %name is used instead of name as first argument to either setvar or
+unsetvar, the environment is used instead of eif's local variable scope.
+.Ss Commands
+The current list of commands are:
+.Bl -tag -width "XXXXXXXXXX" -compact
+.It alias
+setting aliases.
+.It unalias
+remove an alias.
+.It echo
+print out the rest of the line.
+.It beep
+make a beep.
+.It games
+show the games that are configure in.
+.It addgame
+add a game.
+.It connect
+connect to a game.
+.It kill
+kill a hung game process. (Only works if server supports it.)
+.It try
+try a country/rep at a given game.
+.It trykill
+kill a hung game process for a country/rep at a given game.
+.It exit
+quit the program
+.It cmdlist
+list these commands
+.It exec
+execute a file. Supports ~/filename.
+.It runfeed
+execute a program, and use its output as
+.Nm
+commands.
+.It history
+display a listing of the command history.
+.It setvar
+set a variable.
+.It unsetvar
+delete a variable.
+.It @
+pass the rest of the command off to the system to execute.
+.It if
+Uses /bin/test, and stops at endif. Disables command if test returns
+false. Can be nested. Cannot span exec files.
+.It elseif
+Next case in an if sequence, same testing as 'if'.
+.It else
+Last case in an if sequence.
+.It endif
+Ends an 'if' sequence.
+.El
+.Pp
+The file "$HOME/.eifrc" is read in and executed as an exec file.
+.Ss Other Things
+When "connecting" to a game, the program does a chdir to the
+directory specified in the "addgame" command. Thus, you
+can have multiple games, in multiple directories, so that
+your data files for things like "ve" don't get messed up.
+NOTE that the directory name in "addgame" is relative to
+your home directory.
+.Sh EXAMPLES
+.Ss Example .eifrc
+.nf
+# Games
+addgame cvis blitz.wolfpackempire.com 6789 visitor visitor .empire.chg
+addgame zvis blitz.wolfpackempire.com 5678 visitor visitor .empire.zeb
+
+# Read system eifrc
+exec /usr/local/lib/eif/eifrc.include
+
+# Prevent name clashes by defining abbreviations ourselves
+alias	ex	"expl c ${1} 1"
+alias	pl	plane
+alias	sh	ship
+alias	m	map
+alias	b	bmap
+alias	sh	ship
+alias	x	exit
+alias	c	connect
+
+# Run the sat command on all planes in wing S (see eifrc.include)
+alias	sats	"pwith S do sat \\[\\]"
+
+# If a game was passed as argument, connect to it.
+conn ${AUTOGAME:?}
+.fi
+.Sh SEE ALSO
+.Xr readline 3
+.nf
+http://www.stack.nl/~marcolz/empire/
+http://www.wolfpackempire.com/
+.fi
+.Sh COPYRIGHT
+By far most of the code is from the original author: Doug Hay. Very
+little has been modified, but most of that is done by Marc Olzheim
+(marcolz@stack.nl)

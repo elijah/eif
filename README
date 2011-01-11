@@ -1,0 +1,14 @@
+This is a revised release of good old eif.
+
+Virtually no functionalty has been added since the last, final release by
+Doug Hay. It's just been made to compile on today's Linux and *BSD systems
+and will probably compile on a lot of other systems as well.
+
+Since I have not yet had the time to redocument it all and since I do
+not think it necessary, the documentation of the original version is still
+present in the doc directory.
+
+I did however compile it into a manual page.
+
+Marc Olzheim
+<marcolz@stack.nl>

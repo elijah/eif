@@ -1,0 +1,18 @@
+N.B. See doc/CHANGES for further changes.
+
+---------- Version 1.2.0 ----------
+
+Sat Mar 25 21:56:16 CET 2000
+	First release.
+
+---------- Version 1.2.0 ----------
+
+Sat Mar 25 21:56:16 CET 2000
+	Dropped readline from package, lots of cleanups.
+
+---------- Version pre-1.2.0 ----------
+
+Sun Dec 19 15:59:40 CET 1999
+	First pre-release with automake, aclocal, autoconf and autoheader.
+
+---------- Version pre-1.2.0 ----------
